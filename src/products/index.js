@@ -19,20 +19,17 @@ ProductsRouter.post("/", async (req, res, next) => {
 ProductsRouter.get("/", async (req, res, next) => {
     try {
         const query = {}
-        let offsetCustom
-        console.log(offsetCustom)
         const url = req.protocol + "://" + req.get("host") + req.originalUrl;
         let links = []
         const { count, rows } = await ProductsModel.findAndCountAll({
             where: { ...query },
-            limit: 2,
-            offset: offsetCustom,
+            limit: req.query.limit,
+            offset: req.query.offset,
         })
         if (req.query.offset && req.query.limit) {
-            let prevlinkAsNumber = parseInt(req.query.offset) - 1
+            let prevlinkAsNumber = -parseInt(req.query.limit)
             let prevLink = url.replace(`offset=${req.query.offset}`, `offset=${prevlinkAsNumber.toString()}`)
-            let nextLinkAsNumber = parseInt(req.query.offset) + 1
-            offsetCustom = nextLinkAsNumber
+            let nextLinkAsNumber = parseInt(req.query.limit)
             let nextLink = url.replace(`offset=${req.query.offset}`, `offset=${nextLinkAsNumber.toString()}`)
             links = [{ prev: prevLink }, { next: nextLink }]
         }
