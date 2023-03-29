@@ -27,9 +27,9 @@ ProductsRouter.get("/", async (req, res, next) => {
             offset: req.query.offset,
         })
         if (req.query.offset && req.query.limit) {
-            let prevlinkAsNumber = -parseInt(req.query.limit)
+            let prevlinkAsNumber = parseInt(req.query.limit) - parseInt(req.query.offset)
             let prevLink = url.replace(`offset=${req.query.offset}`, `offset=${prevlinkAsNumber.toString()}`)
-            let nextLinkAsNumber = parseInt(req.query.limit)
+            let nextLinkAsNumber = parseInt(req.query.limit) + parseInt(req.query.offset)
             let nextLink = url.replace(`offset=${req.query.offset}`, `offset=${nextLinkAsNumber.toString()}`)
             links = [{ prev: prevLink }, { next: nextLink }]
         }
@@ -52,6 +52,7 @@ ProductsRouter.get("/", async (req, res, next) => {
             query.description = { [Op.iLike]: req.query.description }
         }
         res.send({ count, rows, links })
+        console.log(rows)
     } catch (error) {
         next(error)
     }
